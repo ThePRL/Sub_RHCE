@@ -1,0 +1,66 @@
+Chapter 1 - Introducing Ansible:
+
+As user 'student' on the 'workstation' node:
+- Step 2: "sudo dnf install ansible-navigator"
+- Step 3: "podman login utility.lab.example.com" > "ansible-navigator images"
+
+Chapter 2 - Implementing an Ansible Playbook:
+- Step 2 & 3 (In file internet.yml): 
+- name: Chapter 2 lab exercise
+  hosts: serverb.lab.example.com
+  become: true
+
+  tasks:
+    - name: install latest versions of firewalld, httpd, mariadb-server, php, and php-mysqlnd.
+      ansible.builtin.dnf:
+        name:
+          - firewalld
+          - httpd
+          - mariadb-server
+          - php
+          - php-mysqlnd
+        state: latest
+
+    - name: Ensure firewalld is running and enabled
+      ansible.builtin.service:
+        name: firewalld
+        state: started
+        enabled: true
+
+    - name: Ensure firewalld allows http service to run
+      ansible.posix.firewalld:
+        service: http
+        permanent: true
+        state: enabled
+        immediate: true
+
+    - name: Ensure httpd service is enabled and running
+      ansible.builtin.service:
+        name: httpd
+        state: started
+        enabled: true
+
+    - name: Ensure mariadb service is enabled and running
+      ansible.builtin.service:
+        name: httpd
+        state: started
+        enabled: true
+
+    - name: Copy index.php to /var/www/html/ with 0644 permissions
+      ansible.builtin.copy:
+        src: index.php
+        dest: /var/www/html/index.php
+        mode: '0644'
+
+
+- name: Ensure the control node can access the webserver
+  hosts: workstation.lab.example.com
+  become: false
+
+  tasks:
+    - name: check the webpage
+      ansible.builtin.uri:
+        url: http://serverb.lab.example.com
+        status_code: 200
+
+

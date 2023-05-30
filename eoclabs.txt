@@ -1,0 +1,43 @@
+Chapter 1 - Introducing Ansible:
+- Outcomes: You should be able to install automation content navigator on a control node. 
+
+- As user 'student' on the 'workstation' node:
+	- Step 1: begin with "lab start intro-install"
+	- Step 2: Install ansible-navigator
+	- Step 3: Install the Execution Environment from 'utility.lab.example.com'
+		- Username: admin
+		- Password: redhat
+	- Step 4: Close the lab with 'lab finish intro-install'
+
+Chapter 2 - Implementing an Ansible Playbook
+- Outcomes: You should be able to construct and run an Ansible Playbook to install, configure, and verify the status of web and database services on a managed host. 
+	- The inventory, ansible.cfg, and ansible-navigator.yml, have been pre-configured for this lab.
+
+- Step 1: "lab start playbook-review" -> cd into '/home/student/playbook-review' directory
+- Step 2: Create 'internet.yml' playbook with the following tasks:
+	- Intended for 'serverb.lab.example.com'
+	- Enable Privilege Escalation
+	- Install the latest versions of the following:
+		- firewalld 
+		- httpd 
+		- mariadb-server
+		- php
+		- php-mysqlnd
+	- Ensure the following are running and enabled.
+		- firewalld
+		- httpd
+		- mariadb
+	- Ensure firewalld enables access for http service
+	- Add the necessary entry that uses 'ansible.builtin.copy' module to copy '/home/student/playbook-review/index.php' file to 'var/www/html/index.php'
+		- Mode setto 0644' 
+- Step 3: In a new play, have the control node test access to the web server
+	- Web server is: 'serverb.lab.example.com'.
+	- This task does not require privilege escalation
+	- Use the 'ansible.builtin.uri' module, look for a return status code of 200.
+- Step 4: "lab grade playbook-review"
+- Step 5: "lab finish playbook-review"
+
+Chapter 3 - Managing Variables and Facts
+- Outcomes: You should be able to define variables and use facts in a playbook, as well as use variables defined in an encrypted file.
+
+- Step one: 'lab start data-review'
