@@ -8,3 +8,7 @@ Section 5.2: Modifying and Copying Files to Hosts
 		- file
 		- lineinfile
 		- blockinfile
+
+- Step 1: "lab start file-manage; cd file-manage"
+
+- Step 2: Create a playbook called "secure_log_backups.yml"
