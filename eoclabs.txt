@@ -40,4 +40,75 @@ Chapter 2 - Implementing an Ansible Playbook
 Chapter 3 - Managing Variables and Facts
 - Outcomes: You should be able to define variables and use facts in a playbook, as well as use variables defined in an encrypted file.
 
-- Step one: 'lab start data-review'
+- Step 1: 'lab start data-review' -> 'cd data-review'
+
+- Step 2: Create playbook.yml to do the following to the group 'webserver' (serverb.lab.example.com):
+	- Ensure the following variables are listed in the play:
+		- firewall-pkg: firewalld
+		- firewall_svc: firewalld
+		- web_pkg: httpd
+		- web_svc: httpd
+		- ssl_pkg: mod_ssl
+		- httpdconf_src: files/httpd.conf
+		- httpdconf_dest: /etc/httpd/conf/httpd.conf
+		- htaccess_src: files/.htaccess
+		- secrets_dir: /etc/httpd/secrets
+		- secrets_src: files/htpasswd
+		- secrets_dest: "{{ secrets_dir }}/htpasswd"
+		- web_root: /var/www/html
+	- Write the following tasks:
+		- Ensure latest versions of necessary packages are installed
+			- firewall_pkg
+			- web_pkg
+			- ssl_pkg
+		- With the ansible.builtin.copy module, copy over "{{ httpdconf_src }}" to "{{ httpdconf_dest }}"
+			- Ensure file is owned by user & group: root
+			- Set permissions to '0644'
+		- With the ansible.builtin.file module, ensure "{{ secrets_dir }}" exists.
+			- Owned user and group: apache
+			- Set permissions to '0500'
+		- With the ansible.builtin.copy module, add an htpasswd file, for basic auth of web users.
+			- The source should be "{{ secrets_src }}"
+			- Destination shoudl be "{{ secrets_dest }}" 
+			- Owned user and group: apache
+			- Set permissions to '0400'
+		- With the ansible.builtin.copy module, add create a .htaccess file in the document root directory of the web server.
+			- Copy the file "{{ htaccess_src }}" variable to "{{ web_root }}/.htaccess. 
+			- Owned user and group: apache 
+			- Set permissions to '0400'
+		- With the ansible.builtin.copy module, copy 'index.html' to "{{ web_root }}"
+			- The file should contain the message " HOSTNAME (IPADDRESS) has been customized by Ansible."
+				- Where the hostname is the FQDN of the host and it displays the IPv4 address
+			- Use the 'content' option to specify the contents of the file.
+			- Use ansible facts to determin the needed information 
+		- With the ansible.builtin.service module, enable and start "{{ firewall_svc }}"
+		- With ansible.posix.firewalld module, enable access to https service
+			- Should be immediate and permanent
+		- With the ansible.builtin.service module, enable and start the web service on the managed hosts 
+			- Name should be "{{ web_svc }}"
+
+- Step 3: In a new play within playbook.yml:
+
+        - Add a directive to the play that incorporates vars/secret.yml.
+                - This file contains a variable named "{{ web_pass }}" that specifies the password for the web user.
+                        - This file is created later
+
+	- With the ansible.builtin.uri module, use the 'workstation' machine to test the web server. 
+		- URL: https://serverb.lab.example.com
+		- It does not need privilege escalation
+		- define a variable named "web_user" with the value "guest" 
+		- Use the "{{ web_user }}" and "{{ web_pass }}" variables to authenticate.
+		- Task should verify status code of 200
+		- Register the task result in a variable named "{{ auth_test }}"
+
+	- With the ansible.builtin.debug module, print the content returned from the web server, which is contained in the "{{ auth_test }}" variable
+
+- Step 4: Create vars/secret.yml file, encrypted with ansible-vault. 
+	- Use the password 'redhat'
+	- It should set the web_pass variable to 'redhat', which is the web user password
+
+- Step 5: run the playbook
+
+- Step 6: 'lab grade data-review' 
+
+- Step 7: 'lab finish data-review'

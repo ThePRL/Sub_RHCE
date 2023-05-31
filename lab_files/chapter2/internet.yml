@@ -46,7 +46,7 @@
 
 
 - name: Ensure the control node can access the webserver
-  hosts: workstation.lab.example.com
+  hosts: workstation
   become: false
 
   tasks:

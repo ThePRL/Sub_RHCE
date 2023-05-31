@@ -63,4 +63,6 @@ Chapter 2 - Implementing an Ansible Playbook:
         url: http://serverb.lab.example.com
         status_code: 200
 
+Chapter 3 - Managing Variables and Facts:
+
 

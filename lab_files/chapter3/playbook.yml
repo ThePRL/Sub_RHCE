@@ -1,0 +1,106 @@
+- name: This playbook configures a webpage with basic authentication
+  hosts: webserver
+  become: true
+  gather_facts: true
+
+  vars:
+    firewall_pkg: firewalld
+    firewall_svc: firewalld
+    web_pkg: httpd
+    web_svc: httpd
+    ssl_pkg: mod_ssl
+    httpdconf_src: files/httpd.conf
+    httpdconf_dest: /etc/httpd/conf/httpd.conf
+    htaccess_src: files/.htaccess
+    secrets_dir: /etc/httpd/secrets
+    secrets_src: files/htpasswd
+    secrets_dest: "{{ secrets_dir }}/htpasswd"
+    web_root: /var/www/html
+
+  tasks:
+    - name: Part 2 Ensures needed packages are installed
+      ansible.builtin.dnf:
+        name:
+          - "{{ firewall_pkg }}"
+          - "{{ web_pkg }}"
+          - "{{ ssl_pkg }}"
+        state: latest
+
+    - name: part 3 Copies the httpdconf_src to httpdconf_dest with root ownership and 0644 permissions
+      ansible.builtin.copy:
+        src: "{{ httpdconf_src }}"
+        dest: "{{ httpdconf_dest }}"
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Part 4 Using ansible.builtin.file module, creating the {{ secrets_dir }} directory on the managed host, as it holds the password (Must be owned by 'apache' and group 'apache', permissions 0500
+      ansible.builtin.file:
+        path: "{{ secrets_dir }}"
+        state: directory
+        owner: apache
+        group: apache
+        mode: '0500'
+
+    - name: Part 5 Using ansible.builtin.copy add an htpasswd file. The source should be defined by the {{ secrets_src }} variable, dest should be definted by the {{ secrets_dest }} variable. The file must be owned by the apache user and group. Set 0400 as the file permission
+      ansible.builtin.copy:
+        src: "{{ secrets_src }}"
+        dest: "{{ secrets_dest }}"
+        owner: apache
+        group: apache
+        mode: '0400'
+
+    - name: I needed to create the directory before placing the file there
+      ansible.builtin.file:
+        path: "{{ web_root }}"
+        state: directory
+        mode: '0755'
+
+    - name: part 6 Using the ansible.builtin.copy module, create a web content file 'index.html' in the {{ web_root }} dir stating "hostname (IP) has been customized by ansible." where hostname is the fqdn of the managed host and the IP is the ipv4 address using ansible facts
+      ansible.builtin.copy:
+        dest: "{{ web_root }}/index.html"
+        content: "{{ ansible_facts['fqdn'] }} ({{ ansible_facts['default_ipv4']['address'] }}) has been customized by Ansible!"
+
+    - name: part 7 enable the firewall service with ansible.builtin.service
+      ansible.builtin.service:
+        name: "{{ firewall_svc }}"
+        state: started
+        enabled: yes
+
+    - name: Part 8 using ansible.posix.firewalld enable access to https
+      ansible.posix.firewalld:
+        service: https
+        permanent: true
+        state: enabled
+        immediate: true
+
+    - name: part nine use the ansible.builtin.service to enable and start the web service on the managed host for all config changes to take effect.
+      ansible.builtin.service:
+        name: "{{ web_svc }}"
+        state: started
+        enabled: yes
+
+- name: testing the connection
+  hosts: master
+
+  vars:
+    web_user: guest
+
+  vars_files:
+    - vars/secret.yml
+
+  tasks:
+    - name: Use the ansible.builtin.uri module to request content from the host
+      ansible.builtin.uri:
+        url: https://serverb.sub.local
+        force_basic_auth: true
+        url_username: "{{ web_user }}"
+        url_password: "{{ web_pass }}"
+        validate_certs: false
+        return_content: yes
+        status_code: 200
+      register: auth_test
+
+    - name: Use ansible.builtin.debug to print the content returned from the web server
+      ansible.builtin.debug:
+        var: auth_test.content
