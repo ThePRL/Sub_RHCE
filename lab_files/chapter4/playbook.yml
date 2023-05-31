@@ -1,0 +1,68 @@
+---
+- name: End of chapter 4 lab
+  hosts: web
+  become: true
+  gather_facts: true
+
+  vars_files:
+    files/vars.yml
+
+  tasks:
+    - name: Check system requirements ram
+      when: >
+        (ansible_facts['memtotal_mb'] < min_ram_mb) or
+        (ansible_facts['distribution'] != "RedHat")
+      ansible.builtin.fail:
+        msg: "Your system is inadequate"
+
+    - name: Install/Update packages
+      ansible.builtin.dnf:
+        name: "{{ packages }}"
+        state: latest
+
+    - name: Start services
+      loop: "{{ services }}"
+      ansible.builtin.service:
+        name: "{{ item }}"
+        state: started
+        enabled: true
+
+    - name: Step 4 - Block to setup webpage for https
+      notify: restart_web_service
+      block:
+        - name: Task to ensure the directory is created
+          ansible.builtin.file:
+            path: "{{ ssl_cert_dir }}"
+            state: directory
+            mode: 0755
+
+        - name: Copy all files specified by 'web_config_files' to host
+          loop: "{{ web_config_files }}"
+          ansible.builtin.copy:
+            src: "{{ item['src'] }}"
+            dest: "{{ item['dest'] }}"
+            owner: root
+            group: root
+            mode: '0644'
+
+      rescue:
+        - name: Print Message
+          ansible.builtin.debug:
+            msg: "One or more of the config changes failed, but the web service is still active."
+
+    - name: Configure Firewalld
+      loop:
+        - "http"
+        - "https"
+      ansible.posix.firewalld:
+        service: "{{ item }}"
+        state: enabled
+        permanent: true
+        immediate: true
+
+
+  handlers:
+
+    - name: restart_web_service
+      ansible.builtin.reboot:
+
