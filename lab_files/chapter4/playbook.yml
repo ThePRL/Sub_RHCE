@@ -1,11 +1,11 @@
 ---
 - name: End of chapter 4 lab
-  hosts: web
+  hosts: webservers
   become: true
   gather_facts: true
 
   vars_files:
-    files/vars.yml
+    vars.yml
 
   tasks:
     - name: Check system requirements ram

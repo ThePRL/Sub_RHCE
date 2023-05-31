@@ -1,0 +1,10 @@
+Chapter 5: Deploying Files to a managed host
+
+Section 5.2: Modifying and Copying Files to Hosts
+- Outcomes: 
+	- Retrieve files from managed hosts, by host name, and store them locally
+	- Create playbooks that use common file management modules from the 'ansible.builtin' collection. Such as:
+		- copy
+		- file
+		- lineinfile
+		- blockinfile
