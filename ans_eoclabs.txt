@@ -1,8 +1,14 @@
 Chapter 1 - Introducing Ansible:
 
 As user 'student' on the 'workstation' node:
+#NOTE: In order to start this you are required to create the ansible-navigator.yml file and point the EE to: 
+utility.lab.example.com/ee-supported-rhel8:latest
+Also: Be sure to disable artifacting
+
 - Step 2: "sudo dnf install ansible-navigator"
+
 - Step 3: "podman login utility.lab.example.com" > "ansible-navigator images"
+
 
 Chapter 2 - Implementing an Ansible Playbook:
 - Step 2 & 3 (In file internet.yml): 

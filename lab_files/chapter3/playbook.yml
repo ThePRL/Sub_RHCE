@@ -81,7 +81,7 @@
         enabled: yes
 
 - name: testing the connection
-  hosts: master
+  hosts: workstation
 
   vars:
     web_user: guest
@@ -92,7 +92,7 @@
   tasks:
     - name: Use the ansible.builtin.uri module to request content from the host
       ansible.builtin.uri:
-        url: https://serverb.sub.local
+        url: https://serverb.lab.example.com
         force_basic_auth: true
         url_username: "{{ web_user }}"
         url_password: "{{ web_pass }}"
