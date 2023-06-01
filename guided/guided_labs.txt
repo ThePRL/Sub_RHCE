@@ -35,7 +35,7 @@ Section 5.2: Modifying and Copying Files to Hosts
 - Step 6: Create playbook "add_block.yml", configure it to use the 'ansible.builtin.blockinfile' module to append the following block of text to the /home/devops/users.txt file on all managed hosts:
 
 This block of text consists of two lines.
-they have been added by the blockinfile module.
+They have been added by the blockinfile module.
 
 - Step 7: Create playbook "remove_file.yml", configure it to use the 'ansible.builtin.file' module to remove the /home/devops/users.txt file from all managed hosts 
 

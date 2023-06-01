@@ -1,0 +1,11 @@
+---
+- name: Step 5 - add a line
+  hosts: all
+  remote_user: devops
+
+  tasks:
+    - name: add a line using the lineinfile command
+      ansible.builtin.lineinfile:
+        path: /home/devops/users.txt
+        line: This line was added by the lineinfile module.
+        state: present

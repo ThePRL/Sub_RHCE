@@ -1,0 +1,14 @@
+---
+- name: Step 4 - Set default SELinux context on the file users.txt
+  hosts: all
+  remote_user: root
+
+  tasks:
+    - name: using the file module, set default SELinux context on users.txt for 'user, role, type, and level'
+      ansible.builtin.file:
+        path: /home/devops/users.txt
+        seuser: _default
+        serole: _default
+        setype: _default
+        selevel: _default
+

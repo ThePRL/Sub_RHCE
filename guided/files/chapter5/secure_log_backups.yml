@@ -1,0 +1,12 @@
+---
+- name: Guided exercise 5.2 - step 2 (fetch log files)
+  hosts: all
+  become: true
+  gather_facts: true
+
+  tasks:
+    - name: Using fetch to grab files
+      ansible.builtin.fetch:
+        src: /var/log/secure
+        dest: secure-backups/"{{ ansible_facts['hostname']}}"/secure_{{ ansible_date_time.iso8601 }}"
+        flat: false

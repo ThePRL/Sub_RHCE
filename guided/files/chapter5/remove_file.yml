@@ -1,0 +1,11 @@
+---
+- name: step 7 - removing the file
+  hosts: all
+  remote_user: devops
+
+  tasks:
+    - name: using the ansible.builtin.file module, remove /home/devops/users.txt
+      ansible.builtin.file:
+        path: /home/devops/users.txt
+        state: absent
+
