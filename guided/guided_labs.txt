@@ -11,4 +11,32 @@ Section 5.2: Modifying and Copying Files to Hosts
 
 - Step 1: "lab start file-manage; cd file-manage"
 
-- Step 2: Create a playbook called "secure_log_backups.yml"
+- Step 2: Create a playbook called "secure_log_backups.yml" and have it do the following:
+	- Use the ansible.builtin.fetch module to retrieve the /var/log/secure log from each of the managed hosts and store them on the control node. 
+	- The playbook should create the 'secure-backups' dir with subdirectories named after the host name of each managed host.
+	- Store the backup files in their respective subdirectories
+
+- Step 2.1: Run the playbook.
+
+- Step 3: Create the copy_file.yml playbook in the current working directory. Configure a play in the playbook that connects as the root user and copies the /home/student/file-manage/files/users.txt file to all managed hosts. 
+	- File must have the following parameters:
+		- src: files/users.txt
+		- dest: /home/devops/users.txt
+		- owner: devops
+		- group: devops
+		- mode: u+rw, g-wx, o-rwx
+		- setype: samba_share_t
+- Step 3.1: SSH to servera > verify selinux attributes on users.txt with 'ls -Z'
+
+- Step 4: In the preceding step, the users.txt file received 'samba_share_t' for SELinux type. In "selinux_defaults.yml", configure a play that uses 'ansible.builtin.file' module to set the default SELinux context on the file /home/devops/users.txt for 'user, role, type, and level' 
+
+- Step 5: Create playbook "add_line.yml", configure it to use the 'ansible.builtin.lineinfile' module to append the line "This line was added by the lineinfile module. to /home/devops/users.txt file on all managed hosts. 
+
+- Step 6: Create playbook "add_block.yml", configure it to use the 'ansible.builtin.blockinfile' module to append the following block of text to the /home/devops/users.txt file on all managed hosts:
+
+This block of text consists of two lines.
+they have been added by the blockinfile module.
+
+- Step 7: Create playbook "remove_file.yml", configure it to use the 'ansible.builtin.file' module to remove the /home/devops/users.txt file from all managed hosts 
+
+- Step 8: 'lab finish file-manage'
