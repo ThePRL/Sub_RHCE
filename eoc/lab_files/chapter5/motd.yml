@@ -1,6 +1,6 @@
 ---
 - name: Chapter 5 final task
-  hosts: servers
+  hosts: web
   become: true
   gather_facts: true
 #  remote_user: devops
