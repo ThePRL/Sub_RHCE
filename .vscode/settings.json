@@ -1,0 +1,5 @@
+{
+    "yaml.schemas": {
+        "https://raw.githubusercontent.com/ansible/ansible-lint/main/src/ansiblelint/schemas/ansible.json#/$defs/playbook": "file:///Users/paullafleur/Documents/GitHub/Sub_RHCE/guided/files/chapter5/54deployingfileswithjinja2/motd.yml"
+    }
+}

@@ -1,0 +1,7 @@
+- name: boobs
+  hosts: all
+  tasks:
+  - name: compile 
+    ansible.builtin.copy:
+      src: /this/place
+      dest: /this/other/place
