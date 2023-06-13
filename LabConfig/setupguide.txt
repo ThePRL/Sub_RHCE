@@ -1,0 +1,10 @@
+Start by: 
+
+Create git clone of course:
+git clone https://gitlab.com/rgdacosta/classroom_env.git
+
+Create your git: 
+git clone https://github.com/ThePRL/Sub_RHCE
+
+Copy ansible-navigator.yml file to root:
+cp /home/student/gitstuff/Sub_RHCE/LabConfig/ansible-navigator.yml ~/.ansible-navigator.yml
