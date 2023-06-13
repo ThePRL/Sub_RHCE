@@ -1,7 +1,7 @@
 ---
 ansible-navigator:
   execution-environment:
-    images: utility.lab.example.com/ee-supported-rhel8:latest
+    image: utility.lab.example.com/ee-supported-rhel8:latest
     pull:
       policy: missing
   playbook-artifact:
