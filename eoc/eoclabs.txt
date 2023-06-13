@@ -165,5 +165,14 @@ Chapter 5: Deploying Files to Managed Hosts
 	- Run on all hosts
 	- log in using the 'devops' user
 	- Becomes root
-	- A task using 'ansible.builtin/template' to deploy the motd.j2 file
-		-  
+	- A task using 'ansible.builtin/template' to deploy the motd.j2 file to /etc/motd
+		- Set root as user/group
+		- Permissions must be 0644
+	- Another task that uses ansible.builtin.stat module to verify /etc/motd exists
+		- Register results in a variable
+		- Create another task using the 'ansible.builtin.debug' module to display variable
+	- Another task using the ansible.builtin.copy module to place files/issue into the /etc directory on the managed host
+		- Preserve ownership and permissions
+	- Another task using the 'ansible.builtin.file' module to ensure /etc/issue.net is a symbilic link to /etc/issue on the managed host.
+
+- Step 6: verify and run 
