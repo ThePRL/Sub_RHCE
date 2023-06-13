@@ -1,3 +1,89 @@
 Chapter 5: Deploying Files to a managed host
 
 Section 5.2: Modifying and Copying Files to Hosts
+
+- Step 2:
+- name: Guided exercise 5.2 - step 2 (fetch log files)
+  hosts: all
+  become: true
+  gather_facts: true
+  remote_user: root
+
+  tasks:
+    - name: Using fetch to grab files
+      ansible.builtin.fetch:
+        src: /var/log/secure
+        dest: secure-backups/
+        flat: false
+
+- Step 3: 
+---
+- name: Step 3 - Create the copy-file.yml file
+  hosts: all
+  remote_user: root
+
+  tasks:
+    - name: Copy file to all hosts
+      ansible.builtin.copy:
+        src: /home/student/file-manage/files/users.txt
+        dest: /home/devops/users.txt
+        owner: devops
+        group: devops
+        mode: u+rw,g-wx,o-rwx
+        setype: samba_share_t
+
+- Step 4: 
+---
+- name: Step 4 - Set default SELinux context on the file users.txt
+  hosts: all
+  remote_user: root
+
+  tasks:
+    - name: using the file module, set default SELinux context on users.txt for 'user, role, type, and level'
+      ansible.builtin.file:
+        path: /home/devops/users.txt
+        seuser: _default
+        serole: _default
+        setype: _default
+        selevel: _default
+
+
+- Step 5:
+---
+- name: Step 5 - add a line
+  hosts: all
+  remote_user: devops
+
+  tasks:
+    - name: add a line using the lineinfile command
+      ansible.builtin.lineinfile:
+        path: /home/devops/users.txt
+        line: This line was added by the lineinfile module.
+        state: present
+
+- Step 6: 
+---
+- name: step 6 - create block to append file
+  hosts: all
+  remote_user: devops
+
+  tasks:
+    - name: Create a block using 'blockinfile' module
+      ansible.builtin.blockinfile:
+        path: /home/devops/users.txt
+        block: |
+          This block of text consists of two lines.
+          They have been added by the blockinfile Module.
+        state: present
+
+- Step 7:
+---
+- name: step 7 - removing the file
+  hosts: all
+  remote_user: devops
+
+  tasks:
+    - name: using the ansible.builtin.file module, remove /home/devops/users.txt
+      ansible.builtin.file:
+        path: /home/devops/users.txt
+        state: absent

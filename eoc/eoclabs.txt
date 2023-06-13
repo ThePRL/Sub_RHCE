@@ -144,4 +144,11 @@ Chapter 4: Implementing Task Control:
 
 - Step 8: Access the web server
 
+Chapter 5: Deploying Files to Managed Hosts
+- Outcomes:
+	- Build a template file
+	- Use the template file in a playbook
 
+- Step 1: 'lab start file-review; cd ~/file-review'
+
+- Step 2: 

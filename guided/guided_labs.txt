@@ -40,3 +40,29 @@ They have been added by the blockinfile module.
 - Step 7: Create playbook "remove_file.yml", configure it to use the 'ansible.builtin.file' module to remove the /home/devops/users.txt file from all managed hosts 
 
 - Step 8: 'lab finish file-manage'
+
+Section 5.2: Deploying Custom Files with Jinja2 Templates
+- Outcomes:
+	- Build a template file
+	- use the template file in a playbook
+
+- Step 1: 'lab start file-template; cd file-template' 
+
+- Step 2: 
+	- Note: Your inventory file contains two groups: webservers and workstations
+		- servera is in the webservers group and workstation is in teh workstations group
+	- Note: Your ansible.cfg file also states:
+ansible_managed = Ansible managed: modified on %Y-%m-%d %H:%M:%S
+	- Create a template for the "Message of the Day" file(/etc/motd) and save it as "motd.j2" 
+	- Include the following variables and facts in the template:
+		- ansible_facts['fqdn']
+		- ansible_facts['distribution'] 
+		- ansible_facts['distribution_version']
+		- system_owner, for the system owner's email. 
+			- system_owner will be declared in the 'motd.yml' playbook. 
+
+- Step 3: Create motd.yml:
+	- First, define the variable 'system_owner'
+	- Second, using ansible.builtin.template module, deploy the motd.j2 template. 
+		- It must set the owner and group of /etc/motd to root and the mode to 0644
+	- 
