@@ -22,7 +22,7 @@
   - name: print out result of stat
     ansible.builtin.debug:
       var: stat
-  
+
   - name: Copy files/issue into /etc/ dir preserving ownership/permissions
     ansible.builtin.copy:
       src: files/issue
