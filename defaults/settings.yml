@@ -5,12 +5,6 @@
 
   tasks:
 
-  - name: Create directory
-    ansible.builtin.file:
-      path: /home/student/gitstuff/
-      state: directory
-      mode: '0755'
-
   - name: Clone course git
     ansible.builtin.git:
       repo: https://gitlab.com/rgdacosta/ansible
