@@ -151,4 +151,8 @@ Chapter 5: Deploying Files to Managed Hosts
 
 - Step 1: 'lab start file-review; cd ~/file-review'
 
-- Step 2: 
+- Step 2: View the Inventory and 'serverb_facts.yml' files
+	- The inventory should only contain the 'servers' group, containing serverb
+	- After running the serverb_facts.yml file, you should see the system memory and the number of processors it has
+
+- Step 3: Create a jinja2 template file for the /etc/motd file, named 'motd.j2' 
