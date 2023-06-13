@@ -1,0 +1,520 @@
+#This is the restart of the class  now that I have a better understanding of the material needed to complete.
+
+Chapter 1 - Introducing Ansible:
+- He suggests checking out the DO180 course, which covers Openshift, containers, and Kubernetes
+
+Chapter 1.3 - Installing Ansible 
+- Objectives: Install Ansible on a control node and describe the distinction between community Ansible and Red Hat Ansible Automation Platform
+
+- He suggests checking out the RH415 course, which covers Linux Security
+- He suggests checking out the DO374 and DO467 (learn about ansible vault) courses, to learn about Ansible Controller, the web based management console.
+- He suggests checking out the RH124 and RH134 courses, to learn about containers 
+
+- There are many components to Ansible: 
+	- Ansible-core: This is the bare bones Ansible component.
+		- It contains the Ansible Framework
+		- It does not contain any Modules
+	- Community Ansible: The openly available version of Ansible
+		- Contains some community modules
+		- Not supported directly by Red Hat 
+	- NOTE: The only supported version of Ansible comes from the RH repos. 
+ 
+- Plugins: 
+	- Module Plugins:
+		- These are the assets that do the work
+	- Connection Plugins: 
+		- How the agent connects to the hosts 
+	- Inventory Plugins:
+		- How to identify hosts 
+		- Can be static (easy) or dynamic (more advanced)
+	- Become Plugins: 
+		- Used to define how you access your hosts
+	- Variable Plugins:
+		- Workload parameters
+	- Lookup plugins: 
+		-  Used to identify information in an alternate location
+	- NOTE: There are more plugins, but these are some important ones 
+
+- Ansible-navigator:
+	- Incorporates an execution environment, which allows you to create containers of minimal assets to run playbooks
+		- This removes the need to update playbooks for new versions 
+		- Seperates the host from the execution of playbooks
+		- You can build environments with "ansible-builder"
+	- Comes with a TUI interface
+
+- There is a new context, called Fully Qualified Collection Name (FQCN), as all modules are now moved into collections instead of being part of ansible proper. 
+	- This can be avoided with a curtailed collection 
+	- Collections can be found using 'ansible-galaxy' 
+
+Chapter 2.1 - Building an Ansible Inventory
+- Inventories can be either yml or ini 
+	- ini appears to be most preferred
+
+- Inventories can be declared as a directory instead of a direct file 
+	- I tried using a directory in my lab and it did not work. More research needed
+
+- Dynamic inventories are the best way to manage your inventories
+	- This is an advanced portion of Ansible, not covered in detail of this course
+
+- Static Inventories:
+	- You can sequentially identify hosts using the following syntax
+		- The following creates group 'rhel8' with 2 hosts
+		- If I wanted it to be a child group, I would change the title to [rhel8:children] and add groups to them
+[rhel8]
+server[a:b].lab.example.com
+
+- You can evaluate your inventories with these commands (and more): 
+	- ansible-navigator inventory -i [inventory] -m stdout --list
+		- This will take a declared inventory (the -i flag) and spew every identified system to your terminal 
+		- If you remove the '-m stdout' it will be TUI 
+	- ansible-navigator inventory -i [inventory] -m stdout --graph all 
+		- A cleaner way to see your hosts and how they are divided 
+	- Replace 'all' with any group if you only want to identify their members 
+	- Replace '--graph' with '--host' to identify variables within an inventory
+
+Chapter 2.3 - Managing Ansible Config Files 
+- Objective: Describe where Ansible config files are located, how ansible selects them, and edit them to apply changes to default settings 
+
+- Configuring Ansible: 
+	- There are two files needed to configure ansible, usually in the project directories: 
+		- ansible.cfg: The baseline ansible configuration 
+			- Traditionally in INI format 
+			- Basic coverage declares:
+				- [defaults]
+					- "inventory =" - Inventory file 
+					- "remote_user =" - This is the user that accesses the hosts (usually via SSH)
+					- "ask_pass = " - This is whether to prompt for SSH password if keys aren't available 
+				- [privilege_escalation]
+					- "become = " - This declares whether to automatically elevate to root. 
+						- Best practice: Only enable this inside playbooks when needed
+					- "become_method =" - This specifies how to elevate to root (sudo or su) 
+					- "become_user =" - This is the user that will be performing the tasks 
+						- If this is not set it will default to the execution environment variable to determine user, default root.
+							- The courses environment appears to have it run as 'student' by default
+					- "become_ask_pass =" - Specifies whether to prompt for password (defaults to false) 
+						- Fun Fact: If you have SSH keys setup, you can still input the password, but it won't matter 
+						- Be sure to disable artifacting in Ansible-Navigator if this is set to true
+
+		- ansible-navigator.yml: Configures ansible-navigator
+			- Declares Execution environment to use
+			- Must be in YML or JSON format
+			- Settings can be seen with the 'ansible-navigator config' command
+				- interactive if '-m stdout' is not set
+				- Some settings from the ansible.cfg file are shown here as well 
+	- Precedence of config files: 
+		- Ansible.cfg: (dominant on top) 
+			- NOTE: If none of these files are located, Ansible-navigator will look within the execution environment for equivelants 
+			-  ANSIBLE_CONFIG environment variable
+			- ./ansible.cfg 
+				- In the project directory
+			- ~/.ansible.cfg 
+				- In the home directory of the user using Ansible
+			- /etc/ansible/ansible.cfg 
+				- This is a last resort. Should not be used
+		- ansible-navigator: (dominant on top 
+			- ANSIBLE_NAVIGATOR_CONFIG environment variable
+			- ./ansible-navigator.yml
+				- in the project directory
+			- ~/.ansible-navigator.yml 
+				- In the home directory of the user using Ansible
+		- Note: If using the same directives throughout multiple plays, the best use case is the home directory config files
+		- Note: It appears you can use ansible-navigator.yml to declare most of the ansible.cfg settings. 
+
+- For detailed documentation, visit the ansible-navigator settings documentation site:
+	- Listed as https://ansible-navigator.readthedocs.io/en/latest/settings
+
+Section 2.5: Writing and Running Playbooks: 
+- Objectives: Write a basic Ansible Playbook and run it using the automation content navigator 
+
+- He suggests adding his git repo: https://gitlab.com/rgdacosta/ansible 
+	- Has tips/examples/etc
+
+- If you want more information on a module use "ansible-navigator doc -m stdout [module]" 
+	- The ansible.builtin collection is a part of ansible-core and therefor, does not appear in the "collections" list when running:
+		- ansible-galaxy collections 
+	- When using Ansible-navigator, the collections found on your system no longer matter. What you need to index are the collections in your Execution Environment. You can see that via:
+		- "ansible-navigator collections list"
+- Booleans: 
+	- Truth can be displayed as:
+		- True/true/Yes/yes/y/1
+	- False can be displayed as: 
+		- False/false/No/no/n/0
+	- Best practice: stick to one standard throughout all drafting 
+
+- Playbook Framework: 
+	- Playbooks can hold multiple plays for multiple hosts
+	- A standard playbook has the following elements: 
+--- (technically optional) 
+- name: what this play is doing 
+  hosts: the hosts called for the play
+  become: true/false (This isn't required, but a best practice to only use when necessary. Not utilizing the key in the config file)
+
+  tasks: (denoting the actions to take) 
+
+    - name: explain the task 
+      module FQCN:
+        parameters: sometimes not required, but examples can be seen in the documentation 
+
+    - name: explain the next task 
+...
+- Note: you would repeat the declarative sequence only when you want the play to change hosts or step down from root (I think)
+- Note: All lists start with a '-', be that plays or sequential line items 
+
+- He suggest story boards for playbook creations:
+	- Write out all tasks
+	- Define those tasks with associated available modules 
+
+- Dry runs: 
+	- You can use "ansible-navigator run -m stdout [playbook] --syntax-check" to verify the syntax of your playbooks
+	- You can use "ansible-navigator run -m stdout [playbook] --check" 
+
+Section 2.7: Implementing Multiple Plays 
+- Running Arbitrary Commands on Managed Hosts:
+	- If you need to complete a task which doesn't have an associated module, you can utilize: 
+		- ansible.builtin.command: 
+			- Simplest
+			- You create a bash script and call on it 
+			- Subverts idempotency if script is not formatted correctly
+			- Cannot access the shell environment variables or perform shell operations (|, >, >>)
+			- Python must be installed on hosts 
+		- ansible.builtin.shell: 
+			- Accesses the shell environment
+			- Python must be installed on hosts
+		- ansible.builtin.raw: 
+			- Can run commands directly using the remote shell, bypassing the module subsystem 
+			- Great for equipment without python, such as network equipment 
+			- Can be used to install python on a managed host 
+	- NOTE: When possible, avoid ansible.builtin.command/shell/raw modules in playbooks as it can break systems with lack of idempotency. 
+		- Suggested use case is command > shell > raw 
+- YAML Syntax: 
+	- YAML Comments: 
+		- Same as scripting, start with '#' 
+	- YAML Strings: 
+		- Strings do not normally require quotes, but they can be used. Either double or single is fine
+		- Multiline strings can be written in two ways:
+			- | : Preserves line spacing, great for something like an address. 
+				- Example: include_newlines: | 
+						some address
+						with information 
+			- > : Removes leading white space and lines
+	- YAML Dictionaries: 
+		- All 'key: value' pairs are dictionaries. 
+		- Traditionally writen on multiple lines, but can be inline with {name: bob, svcservice: httpd, svcport:80}
+			- Inline dictionary common in old roles 
+	- YAML Lists: 
+		- Lists are denoted with a single-dash, IE: 
+			- hosts:
+			  - servera
+			  - serverb 
+		- Can also be listed inline with square brackets:
+			- hosts: [servera, serverb]
+
+Section 2.10 - Summary: 
+- A play is an ordered list of tasks that run against hosts selected from the inventory.
+
+- A playbook is a text file that contains a list of one or more plays to run in order.
+
+- Ansible Playbooks are written in YAML format.
+
+- Ansible plays are idempotent, which means they avoid making any changes if they detect that the current state matches the desired final state.
+
+- YAML files are structured using space indentation to represent the data hierarchy.
+
+- Tasks are implemented using standardized code packaged as Ansible modules.
+
+- Ansible modules are packaged into Ansible Content Collections, which are a distribution format for Ansible content that can include playbooks, roles, modules, and plug-ins.
+
+- The ansible-navigator doc command can list modules in your automation execution environments, and provide documentation and example code snippets of how to use them in playbooks.
+
+- The ansible-navigator run command is used to run playbooks and validate playbook syntax.
+
+Chapter 3 - Managing Variables and Facts: 
+- Objectives: 
+	- Create and reference variables that affect particular hosts or host groups, the play, or the global env, and describe how variable precedence works 
+	- Encrypt sensitive variables using Ansible Vault, and run playbooks that reference Vault-encrypted variable files
+	- Reference data about managed hosts using Ansible facts, and configure custom facts on managed hosts. 
+
+Section 3.1 Managing Variables: 
+- Variable Naming Rules: 
+	- Must begin with an alphabetical character
+	- Only allowed punctuation is an underscore 
+
+- In order to reference a variable, use curly braces: {{ variable }} 
+	- Space between bracket and variable name are optional, but best practice
+	- If your key value begins with a variable, it must have quotes: "{{ variable }}" 
+	- From Chapter 4: If you want a variable to be a true or false string, put it in quotes. Otherwise, no quotes for booleans. If you want to be sure it is seen as a boolean, list as the following for the When: condition
+		- When: [variable] | bool
+
+- There are system wide variables that don't need to be defined directly and are compiled with the setup module
+	- Known as ansible facts 
+
+- Precedence: 
+	- There are 22 ways to store variables within ansible. 
+	- It's best to not worry about where all variables can be stored, instead refer to documentation when creating them 
+		- Source:- https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_variables.html
+	- If you have multiple variables of the same name within one playbook, the latest referred variable takes precedence
+
+Section 3.3 - Managing Secrets: 
+- Objectives: Encrypt sensitive variables by using Ansible Vault, and run playbooks that reference Vault-encrypted variable files. 
+
+- Use the 'ansible-vault' command to configure your vault
+
+- A vault is a basic var file encrypted with 'python toolkit' (AEX256) 
+
+- It maintains the same precedence system as all var objects 
+
+- For this course, but not in production, create a password file with limited permissions and point to it in the config file using the 'vault_password_file = [vault file location]' key in the ansible.cfg file
+	- To see how enterprise handles vault passwords, check out the DO467 course 
+
+- If you want to be prompted for the vault password, you must turn off artifacting 
+	- best to do that in the ansible-navigator.cfg file 
+
+- It is recommended practice to place your vault in a "group_vars" or "host_vars" directory in the playbook directory
+
+Section 3.5 - Managing Facts:
+- Objectives: Reference data about managed hosts using Ansible facts, and configure custom facts on managed hosts.
+
+- The adhoc command to see all facts for a system is: 
+	- ansible [host] -m ansible.builtin.setup | less
+		- output is in json
+
+- It can be beneficial to turn off fact gathering in your ansible.cfg file (gather_facts) as it delays processing. 
+	- The only way I found to do this in the ansible.cfg was: 'gathering: explicit'
+	- You can turn it on as needed in playbooks with "gather_facts: true"
+
+- To call upon an ansible fact in a playbook:
+	- call upon the dictionary (ansible_facts): 
+{{ ansible_facts['fact'] }}
+		- The ['fact'] is any fact you want to reference. It is likely listed as "ansible_fact" in the ansible.builtin.setup listing. Remove the preceding 'ansible_'
+
+- In the demo, he displayed the following: 
+  - name: Print important facts
+    ansible.builtin.debug:
+      msg: |
+        My system name: {{ ansible_facts['hostname'] }}
+        My root filesystem has: {{ ansible_facts['mounts'][0]['size_available'] | human_readable }} available
+		- This shows the size of the first ([0]) object in the 'mounts' dictionary in a human readable format with a trailing term 'available' 
+
+- NOTE: The debug module doesn't require quotes as it's expecting variables
+- NOTE: The ansible.builtin.debug module can be used to analyze how to use facts
+- NOTE: The default gather_facts does not gather package facts. 
+	- Use ansible.builtin.package_facts for this 
+
+- ansible.builtin.setup:
+	- This module can be used to gather specific fact subsets/ entire gather facts task/ or exclude specific subsets 
+- Creating facts: 
+	- You can create custom facts on each host in the /etc/ansible/facts.d directory
+		- Must be created on the managed host 
+		- All files must be written in INI or JSON format 
+			- Cannot be written in YAML
+		- Filenames must end with .facts 
+
+- Magic Variables: 
+	- There are reserved variable names that should not be used: 
+		- hostvars: Contains the variables for managed hosts, and can be used to get the values for another managed host's variables. It does not include the managed host's facts if they have not yet been gathered for that host
+		- group_names: Lists all groups that the current managed host is in 
+		- groups: Lists all groups and hosts in the inventory
+		- inventory_hostname: Contains the hostname for the current managed host as configured in the inventory. Thist might be different from the hostname reported by facts for various reasons
+
+
+Chapter 4 - Implementing Task Control
+
+Section 4.1 - Writing Loops and Conditional Tasks
+
+- Keys vs dictionaries: 
+	- A Key is a variable with 1 or more values, which can be displayed as: 
+key: value
+
+or 
+
+key: 
+  - value_1
+  - value_2
+
+	- A dictionary is a collection of other dictionaries OR keys 
+
+- Loops: There are many modules that accept loops, which is accomplished using the 'lookup' plugin. To see affiliated modules on your system use:
+	- 'ansible-navigator doc -t lookup -l -m stdout' 
+		- The '-t' flag refers to plugins
+		- the '-l' flag lists all results
+		- The 'lookup' plugin is a plugin that pulls information from other sources, and is integral for loops
+
+- Example of a loop: 
+
+vars:
+
+  my_users:
+    - fred
+    - barney
+    - wilma
+    - betty
+
+tasks: 
+
+  - name: create users
+    loop: "{{ my_users }}"
+	- NOTE: This is calling on the 'my_users' key referenced earlier, so the later reference to the key is "item"(a standardized call)
+    ansible.builtin.user:
+      name: "{{ item }}" 
+
+
+- In another example, he shows us a listing of a key and dictionary and shows how you can interact with it in a small playbook: 
+	- In the file: 
+
+mygroups:
+  - item1
+  - item2
+
+myusers:
+
+  user1:
+    groups:
+      - group1
+      - wheel
+    password: [password]
+
+  user2:
+    groups: group1
+    password: [password]
+
+	- In the playbook:
+- name: create users in the listed groups
+  hosts: web
+  no_log: false
+	- Note: This prevents logging and should be used for sensitive data
+
+  vars_files:
+    - [var file]
+
+  tasks:
+
+    - name: create groups
+      loop: "{{ mygroups }}"
+      ansible.builtin.group:
+        name: "{{ item }}"
+        state: present
+
+    - name: ensure users are in proper groups
+      loop: "{{ myusers | dict2items }}"
+	- Note: the dict2items is needed as the "myusers" is a dictionary
+      ansible.builtin.user:
+        name: "{{ item['key'] }}"
+	- Note: This is calling on the username listed in the myusers dictionary
+	groups: "{{ item['value']['groups'] }}"
+	- Note: This is calling on the value 'groups' within the username dictionary
+        password: "{{ item['value']['password'] | password_hash('sha512') }}"
+	- Note: This is doing the same thing as groups, but saving in a password hash 
+  
+- Calling on multiple variables in a single module
+	- To do this, the syntax is as follows: loop: "{{ list1 | product(list2) | list }}"
+		- This creates all possible combinations of list1 and list2 pairs
+		- There are other forms of combination, can be seen in loops ansible documentation
+		- items from the first list will be referred to as 'item[0]', the second would be 'item[1]'
+
+- Calling on lists with titles:
+	- Lets say you have a list like this:
+
+
+- Task Blocks: 
+	- Used when relating a group of tasks to a specific variable or fact
+	- By using the block, the 'when' conditional will be applied to everything in the block
+	- Formatting: 
+tasks:
+  - name: do a thing when a thing
+    when: "'Redhat' is in ansible_facts['distribution']"
+	- NOTE: I think this is the old way to do fact declaration, and should instead be {{ ansible_facts['distribution }} (double quotes if it started the line)
+    block:
+      - name: this thing 
+
+- The 'When' Conditional:
+	- This is used to identify system tasks for proper system properties. 
+	- You can list multiple properties in the same way you would list a key with a list of values
+
+- Registering and Debug:
+	- If you want the data from a command to be captured into a variable, use 'register' at the module level (so in line with the module listing) and give it a name (like properties/thing/data/etc) 
+	- If you want details of that register, you can run the debug module to spit out the data via: 
+  - name: temp debug task
+    ansible.builtin.debug:
+      var: properties
+
+	- The ansible.builtin.stat command pulls detailed information from the element it is pointed to
+	- He also mentioned the assert module. Not really sure what that does
+
+- NOTE: Older forms of loops (pre 2.5) have a very different styling. Expect to see it in the future
+
+
+Section 4.3 - Implementing Handlers:
+
+- Handlers are dormant tasks waiting to be activated
+
+- Handlers are called upon via the 'notify' module, and is run after ALL OTHER PLAYS in a playbook are run, regardless of calling line. 
+	- They are called upon by their name
+	- They are also only activated if the preceeding tasks result in a changed state 
+		- So if you put notify in Task 1, and a change only occurs in Task 2, the handler will not be called.
+	- If a task within a play fails, the handler will never be called. 
+		- Unless you use the 'force_handlers: true' in the beginning of the playbook
+- Meta: 
+	- This module (ansible.builtin.meta) can be used to execute all handlers when called in a task! 
+		- Needs the 'flush_handlers' action, which is in the documentation
+
+Example:
+
+tasks:
+
+  - name: Ensure needed content is present
+    notify:
+      - Ensure server is rebooted
+    ansible.builtin.whatever:
+      tasks or whatever
+
+handlers:
+
+  - name: Ensure server is rebooted
+    ansible.builtin.reboot
+
+Section 4.4 - Handling Task Failure:
+
+- Using the setting "force_handlers: true" will ensure handlers are run regardless of failure
+
+- There is a setting called "ignore_errors" that changes how Ansible deals with failure
+
+- When using the command module, you can add the flag "changed_when: false" to ensure it only reports 'OK' 
+
+- You can also shift the result of a successful play by adding: "failed_when". Example:
+tasks:
+  - name: install thing
+    ansible.builtin.dnf:
+      name: thing
+      state: present
+    failed_when: [put in condition, such as web_package == "httpd" 
+	NOTE: web_package == "httpd" is a call to a variable in the example of the course
+
+
+Chapter 5: Deploying Files to Managed Hosts
+
+Section 5.3 - Deploying Custom Files with Jinja2 Templates
+
+- He suggests taking course: DO374 course again
+
+- Jinja2 is a templating language within python
+
+- ansible.buitin.template is used to evaluate a jinja2 template to be used within Ansible
+
+- Jinja would be used instead of apps like 'lineinfile', 'blockinfile', and 'copy', to ensure a declarative architecture. 
+	- Allows the use of variables
+
+- Jinja files end in '.j2' and should be kept in the 'templates' directory of a playbook 
+
+- Example of Jinja2 formatting:
+# {{ ansible_managed }}
+{# this is a comment #}
+
+Hello, I am {{ inventory_hostname }}
+
+Note: The first line will be seen in the final product
+	- The variable called was located in the 'ansible.cfg' file.
+	- It is suggested to warn users of modifications, as they will be overwritten in the next run of the config.
+	- The line in the playbook stated "ansible_managed = Ansible managed" 
+Note: The second line is how comments work and won't be in the final product
+
+

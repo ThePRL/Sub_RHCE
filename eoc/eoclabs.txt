@@ -151,8 +151,19 @@ Chapter 5: Deploying Files to Managed Hosts
 
 - Step 1: 'lab start file-review; cd ~/file-review'
 
-- Step 2: View the Inventory and 'serverb_facts.yml' files
+- Step 2: View the Inventory
 	- The inventory should only contain the 'servers' group, containing serverb
-	- After running the serverb_facts.yml file, you should see the system memory and the number of processors it has
 
-- Step 3: Create a jinja2 template file for the /etc/motd file, named 'motd.j2' 
+- Step 3: Create a serverb_facts.yml file to identify resource limits of host
+	- Identify facts total system memory and number of processors
+
+- Step 4: in the 'templates' dir, create a Jinja2 template file for the Message of the Day (/etc/motd), named motd.j2. 
+	- A message should display on user terminal showing systems total memory and processor count. 
+		- Use the 'ansible_facts['memtotal_mb']' and 'ansible_facts['processor_count'] in the template to provide the system resource info for the message
+
+- Step 5: Create playbook motd.yml in the project dir
+	- Run on all hosts
+	- log in using the 'devops' user
+	- Becomes root
+	- A task using 'ansible.builtin/template' to deploy the motd.j2 file
+		-  

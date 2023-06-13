@@ -1,0 +1,9 @@
+---
+- name: Gather facts from host
+  hosts: host1.sub.local
+  gather_facts: true
+
+  tasks:
+    - name: Gather facts
+      ansible.builtin.debug:
+        var: ansible_facts
