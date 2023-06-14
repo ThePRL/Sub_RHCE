@@ -47,6 +47,10 @@ Chapter 1.3 - Installing Ansible
 	- Collections can be found using 'ansible-galaxy' 
 
 Chapter 2.1 - Building an Ansible Inventory
+- NOTE: There are more inventory notes in CHAPTER 6 
+
+- Another NOTE: You can only call upon a host via IP if the IP is listed in the inventory!
+
 - Inventories can be either yml or ini 
 	- ini appears to be most preferred
 
@@ -516,5 +520,30 @@ Note: The first line will be seen in the final product
 	- It is suggested to warn users of modifications, as they will be overwritten in the next run of the config.
 	- The line in the playbook stated "ansible_managed = Ansible managed" 
 Note: The second line is how comments work and won't be in the final product
+
+
+Chapter 6: Managing Complex Plays and Playbooks
+
+Section 6.1 - Selecting Hosts with Host Patterns
+
+- With any inventory, you can pull information about them with: 
+	- ansible --list all
+		- This will show you all hosts in an inventory
+	- ansible --list 'group1:&group2'
+		- Replace the "group1" and "group2"
+		- This will show you the machines that are members of both group1 and group2 
+	- ansible --list 'group1:!group2'
+		- This will show you all members that are part of group1 and not part of group2
+	- ansible --list 'group1:group2'
+		- This will show you members of both groups (basically ':' is an 'or')
+
+- The context above also works in playbooks in the 'hosts' field, IE:
+- name: Random playbook
+  hosts:
+    - servera
+    - webservers:&fedora
+    - dbservers:!fedora
+
+- Note: You can also use variables for your hosts! 
 
 

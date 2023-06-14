@@ -3,8 +3,10 @@
         "https://raw.githubusercontent.com/ansible/ansible-lint/main/src/ansiblelint/schemas/ansible.json#/$defs/playbook": [
             "file:///Users/paullafleur/Documents/GitHub/Sub_RHCE/guided/files/chapter5/54deployingfileswithjinja2/motd.yml",
             "file:///Users/paullafleur/Documents/GitHub/Sub_RHCE/defaults/settings.yml",
-            "file:///Users/paullafleur/Documents/GitHub/Sub_RHCE/eoc/lab_files/chapter5/serverb_facts.yml"
+            "file:///Users/paullafleur/Documents/GitHub/Sub_RHCE/eoc/lab_files/chapter5/serverb_facts.yml",
+            "file:///Users/paullafleur/Documents/GitHub/Sub_RHCE/eoc/lab_files/chapter5/motd.yml"
         ],
         "https://raw.githubusercontent.com/ansible/ansible-navigator/main/src/ansible_navigator/data/ansible-navigator.json": "file:///Users/paullafleur/Documents/GitHub/Sub_RHCE/configfiles/ansible-navigator.yml"
-    }
+    },
+    "ansible.python.interpreterPath": "/usr/bin/python3"
 }
