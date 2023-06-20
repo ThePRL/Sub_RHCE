@@ -1,0 +1,40 @@
+---
+- name: Configure Web servers
+  hosts: host1.sub.local
+  gather_facts: false
+  become: true
+
+  tasks:
+    - name: task 3.1 including environment.yml
+      ansible.builtin.import_task:
+        file: tasks/environment.yml
+        vars:
+          package: httpd
+          service: httpd
+
+    - name: task 3.2 importing the firewall.yml file
+      ansible.builtin.import_task:
+        file: tasks/firewall.yml
+        vars:
+          firewall_pkg: firewalld
+          firewall_svc: firewalld
+          rule: 
+            - http
+            - https
+
+    - name: task 3.3 import placeholder.yml
+      ansible.builtin.import_task:
+        file: tasks/placeholder.yml
+        vars:
+          file: '/var/www/html/index.html'
+
+- name: Test the changes
+  hosts: master.sub.local
+  become: false
+  gather_facts: false
+
+  tasks:
+    - name: import the test play
+      ansible.builtin.import_playbook: plays/localtest.yml
+      vars: 
+        url: 'http://host1.sub.local'

@@ -114,13 +114,16 @@ Objectives: Include task and playbook files in playbooks
 - Step 2: Files placed in files dir. 
 
 - Step 3: Create playbook.yml. Define the first play with the name Configure Web Server. The play should execute against servera.lab.example.com
-	- In the first task, include the 'environment.yml' playbook
+	- In the first task, include the 'environment.yml' task file
 		- Be sure to define the variables in 'environment.yml'
-	- In the second task, import the firewall.yml file. 
+	- In the second task, import the firewall.yml task file 
 		- Be sure to define the variables in 'firewall.yml' 
+		- you want to open up 'http' and 'https'
 	- In the third task, import placeholder.yml task file
-	- In a new play, import test.yml 
+		- Set the file variable to /var/www/html/index.html.
+	- In a new play, import test.yml PLAYBOOK
 		- Be sure to define the variables in 'test.yml'
+		- This will be different than importing the tasks 
 
 - Step 4: Test and run 
 
