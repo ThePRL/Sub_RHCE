@@ -1,6 +1,6 @@
 ---
 - name: Test web service
-  hosts: host1.sub.local
+  hosts: master.sub.local
   become: false
   tasks:
     - name: connect to internet web server
