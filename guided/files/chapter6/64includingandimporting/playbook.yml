@@ -1,7 +1,7 @@
 ---
 - name: Configure Web servers
   hosts: host1.sub.local
-  gather_facts: false
+  gather_facts: true
   become: true
 
   tasks:
