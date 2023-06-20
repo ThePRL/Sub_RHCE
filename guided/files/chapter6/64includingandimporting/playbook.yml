@@ -26,7 +26,7 @@
       ansible.builtin.import_tasks:
         file: tasks/placeholder.yml
       vars:
-        file: '/var/www/html/index.html'
+        file: /var/www/html/index.html
 
 - name: Test the changes
   hosts: master.sub.local
