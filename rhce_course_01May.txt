@@ -544,6 +544,39 @@ Section 6.1 - Selecting Hosts with Host Patterns
     - webservers:&fedora
     - dbservers:!fedora
 
-- Note: You can also use variables for your hosts! 
+- NOTE: You can also use variables for your hosts! 
 
+- Another NOTE: If you call upon hosts with something like 's*' (which will call on anything starting with 's'), it will include any groups and hosts that start with 's'. So if you have fridge.example.com in the 'stuff' group, it will be added
 
+Section 6.3 - Including and Importing Files
+
+- This section is mainly about modularity. If you have a long playbook, or a specific loop/task you could put it in it's own file and call upon it in other playbooks. 
+	- It looks like the files need to be in the same directory as the running playbook, but that may be wrong. 
+
+- An example of how to include_tasks:
+
+tasks:
+  - name: Include a thing when a thing
+    when:
+      - some_var == "thing"
+    include_tasks: other_play.yml
+
+- You can see a list of includes/import options via: ansible-navigator doc -m stdout -l
+
+- Distinction: 
+	- 'import' is another word for 'required' and will run everytime a playbook runs
+		- Some notes on importing:
+			- Applying conditionals (like when) to an import applies the conditional to each task in the play instead of the playbook directly
+			- You cannot use loops with imports
+			- If you use a variable to specify the name of the file to import, then you cannot use a host or group inventory variable
+			- If using import_playbook feature, you cannot add them inside a play (tasks: section), and instead should be inline with the preamble. 
+				- This can be interweaved with plays though, the spacing is what is important here.
+
+	- 'include' is another word for 'borrow', which will only activate when specific conditions are met (example above)
+
+- An example of how to import_tasks:
+---
+- name: Install Web Server
+  hosts: webservers
+  tasks:
+  - import_tasks: some_play.yml

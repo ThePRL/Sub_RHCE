@@ -65,4 +65,63 @@ ansible_managed = Ansible managed: modified on %Y-%m-%d %H:%M:%S
 	- First, define the variable 'system_owner'
 	- Second, using ansible.builtin.template module, deploy the motd.j2 template. 
 		- It must set the owner and group of /etc/motd to root and the mode to 0644
-	- 
+
+Section 5.4: I need to go back to do this one!
+
+Section 6.2 - Selecting Hosts with Host Patterns
+
+- I did this mod in the VM env as the lab was not needed
+
+- Objectives: The goal of this lab is to bash the provided inventories (files/chapter6/62selectinghosts) with patterns (*,'', etc)
+
+- Step 1: Verify the files work by running playbook.yml and seeing 'db1.example.com' hostname against inventory1
+
+- Step 2: Change the targeted host in the playbook from 'db1.example.com' to '172.25.252.44' against inventory1
+
+- Step 3: Change the targets host in the playbook from '172.25.252.44' to 'all' against inventory1
+
+- Step 4: Change the targets host in the playbook from 'all' to all hosts that end with .example.com, against inventory1
+
+- Step 5: Without accesssing the groups in the inventory1 file, modify the host pattern to list these three hosts from inventory1:
+	- lb1.lab.example.com
+	- s1.lab.example.com
+	- db1.example.com
+		- Note: This one is very direct and does not include any grep
+
+- Step 6: Use wildcard to list hosts that start with a 172.25. IP on inventory1
+
+- Step 7: Use host pattern to list all hosts that start with the letter "s" in inventory1
+	- Interestingly, you will get one called file2.example.com and db2.example.com. This is because they are in a group that starts with 's' 
+
+- Step 8: Using a list and wildcard host patterns, list all hosts in the 'prod' group, hosts with an UP address beginning with 172, and hosts that contain 'lab' in their name on inventory 1
+
+- Step 9: List all hosts that belong to both the 'db' and 'london' groups on inventory1
+
+- Step 10: Modify the hosts value in playbook.yml file so all servers in the london group are targeted. Run the playbook using the inventory2 file
+
+- Step 11: Modify the hosts value in the playbook.yml file so that all servers in teh 'europe' nested group art targeted. Run the playbook using inventory2
+
+- Step 12: Modify the hosts value in the playbook.yml file so that all servers that do not belong to any group are targeted using the inventory2 file.
+
+- Step 13: Modify the hosts value in the playbook.yml file to specify a group that does not exist in the inventory2 file. 
+
+Section 6.4 - Including and importing files: 
+
+Objectives: Include task and playbook files in playbooks
+
+- Step 1: 'lab start projects-file; cd ~/projects-file' 
+
+- Step 2: Files placed in files dir. 
+
+- Step 3: Create playbook.yml. Define the first play with the name Configure Web Server. The play should execute against servera.lab.example.com
+	- In the first task, include the 'environment.yml' playbook
+		- Be sure to define the variables in 'environment.yml'
+	- In the second task, import the firewall.yml file. 
+		- Be sure to define the variables in 'firewall.yml' 
+	- In the third task, import placeholder.yml task file
+	- In a new play, import test.yml 
+		- Be sure to define the variables in 'test.yml'
+
+- Step 4: Test and run 
+
+- Step 5: 'lab finish projects-file' 
