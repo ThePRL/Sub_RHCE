@@ -1,6 +1,6 @@
 ---
 - name: Configure Web servers
-  hosts: workstation
+  hosts: host1.sub.local
   gather_facts: true
   become: true
 
@@ -29,6 +29,6 @@
         file: /var/www/html/index.html
 
 - name: Test the changes
-  ansible.builtin.import_playbook: plays/test.yml
+  ansible.builtin.import_playbook: plays/localtest.yml
   vars:
-    url: 'http://servera.lab.example.com'
+    url: 'http://host1.sub.local'
