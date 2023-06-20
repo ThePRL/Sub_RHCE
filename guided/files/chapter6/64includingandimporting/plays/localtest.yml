@@ -2,6 +2,8 @@
 - name: Test web service
   hosts: master.sub.local
   become: false
+  gather_facts: true
+  
   tasks:
     - name: connect to internet web server
       ansible.builtin.uri:

@@ -19,8 +19,8 @@
         firewall_pkg: firewalld
         firewall_svc: firewalld
         rule:
-            - http
-            - https
+          - http
+          - https
 
     - name: task 3.3 import placeholder.yml
       ansible.builtin.import_tasks:
@@ -35,6 +35,7 @@
 
   tasks:
     - name: import the test play
-      import_playbook: plays/localtest.yml
+      ansible.builtin.import_playbook: 
+        files: plays/localtest.yml
       vars:
         url: 'http://host1.sub.local'
