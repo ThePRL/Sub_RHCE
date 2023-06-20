@@ -6,24 +6,24 @@
 
   tasks:
     - name: task 3.1 including environment.yml
-      ansible.builtin.import_task:
+      ansible.builtin.import_tasks:
         file: tasks/environment.yml
         vars:
           package: httpd
           service: httpd
 
     - name: task 3.2 importing the firewall.yml file
-      ansible.builtin.import_task:
+      ansible.builtin.import_tasks:
         file: tasks/firewall.yml
         vars:
           firewall_pkg: firewalld
           firewall_svc: firewalld
-          rule: 
+          rule:
             - http
             - https
 
     - name: task 3.3 import placeholder.yml
-      ansible.builtin.import_task:
+      ansible.builtin.import_tasks:
         file: tasks/placeholder.yml
         vars:
           file: '/var/www/html/index.html'
@@ -36,5 +36,5 @@
   tasks:
     - name: import the test play
       ansible.builtin.import_playbook: plays/localtest.yml
-      vars: 
+      vars:
         url: 'http://host1.sub.local'
