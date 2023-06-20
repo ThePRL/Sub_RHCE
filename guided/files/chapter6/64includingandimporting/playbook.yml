@@ -35,6 +35,6 @@
 
   tasks:
     - name: import the test play
-      ansible.builtin.import_playbook: plays/localtest.yml
+      import_playbook: plays/localtest.yml
       vars:
         url: 'http://host1.sub.local'
