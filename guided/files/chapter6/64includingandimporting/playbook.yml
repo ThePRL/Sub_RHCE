@@ -29,13 +29,7 @@
         file: /var/www/html/index.html
 
 - name: Test the changes
-  hosts: master.sub.local
-  become: false
-  gather_facts: false
-
-  tasks:
-    - name: import the test play
-      ansible.builtin.import_playbook: 
-        files: plays/localtest.yml
-      vars:
-        url: 'http://host1.sub.local'
+  ansible.builtin.import_playbook: 
+    files: plays/localtest.yml
+  vars:
+    url: 'http://host1.sub.local'
