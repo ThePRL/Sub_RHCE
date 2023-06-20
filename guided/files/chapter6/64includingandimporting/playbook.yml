@@ -29,7 +29,6 @@
         file: /var/www/html/index.html
 
 - name: Test the changes
-  ansible.builtin.import_playbook: 
-    file: 'plays/localtest.yml'
+  ansible.builtin.import_playbook: plays/localtest.yml
   vars:
     url: 'http://host1.sub.local'
