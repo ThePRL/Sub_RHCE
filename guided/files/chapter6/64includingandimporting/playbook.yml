@@ -5,28 +5,28 @@
   become: true
 
   tasks:
-    - name: task 3.1 including environment.yml
+    - name: task 31 including environment.yml
       include_tasks:
         file: tasks/environment.yml
-        vars:
-          package: httpd
-          service: httpd
+      vars:
+        package: httpd
+        service: httpd
 
     - name: task 3.2 importing the firewall.yml file
       ansible.builtin.import_tasks:
         file: tasks/firewall.yml
-        vars:
-          firewall_pkg: firewalld
-          firewall_svc: firewalld
-          rule:
+      vars:
+        firewall_pkg: firewalld
+        firewall_svc: firewalld
+        rule:
             - http
             - https
 
     - name: task 3.3 import placeholder.yml
       ansible.builtin.import_tasks:
         file: tasks/placeholder.yml
-        vars:
-          file: '/var/www/html/index.html'
+      vars:
+        file: '/var/www/html/index.html'
 
 - name: Test the changes
   hosts: master.sub.local
