@@ -1,6 +1,6 @@
 ---
 - name: Configure Web servers
-  hosts: workstation
+  hosts: http://servera.lab.example.com
   gather_facts: true
   become: true
 
